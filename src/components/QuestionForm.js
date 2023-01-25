@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import axios from "axios";
 function QuestionForm(props) {
   const [formData, setFormData] = useState({
     prompt: "",
@@ -17,9 +17,27 @@ function QuestionForm(props) {
     });
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
     console.log(formData);
+    const answers = [formData.answer1, formData.answer2, formData.answer3, formData.answer4];
+    const body = {
+      prompt: formData.prompt,
+      answers: answers,
+      correctIndex: formData.correctIndex,
+    };
+
+     // Send POST request to API
+     try {
+      const res = await axios.post("/questions", body, {
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(res.data);
+      // update state in QuestionList component to display the new question
+      props.updateQuestions(res.data);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
