@@ -1,7 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
-import QuestionList from './QuestionList';
-
 
 function QuestionForm(props) {
   const [formData, setFormData] = useState({
@@ -20,32 +17,29 @@ function QuestionForm(props) {
     });
   }
 
-  async function handleSubmit(event) {
+  function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
-    const answers = [formData.answer1, formData.answer2, formData.answer3, formData.answer4];
-    const body = {
-      prompt: formData.prompt,
-      answers: answers,
-      correctIndex: formData.correctIndex,
-    };
-
-     // Send POST request to API
-     try {
-      const res = await axios.post("/questions", body, {
-        headers: { "Content-Type": "application/json" },
-      });
-      console.log(res.data);
-      // update state in QuestionList component to display the new question
-      props.updateQuestions(res.data);
-    } catch (err) {
-      console.log(err);
-    }
+    fetch("http://localhost:4000/questions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: formData.prompt,
+        answers: [
+          formData.answer1,
+          formData.answer2,
+          formData.answer3,
+          formData.answer4,
+        ],
+        correctIndex: parseInt(formData.correctIndex),
+      }),
+    });
   }
 
   return (
     <section>
-      <h1>New Question</h1>
+      <h1>Add New Question</h1>
       <form onSubmit={handleSubmit}>
         <label>
           Prompt:
